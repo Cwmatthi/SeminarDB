@@ -28,7 +28,7 @@ CREATE TABLE MemberPass
 (
 	MemberPassID INT Identity,
 	MemberID int NOT NULL,
-	Password varchar(255) NOT NULL,
+	Password varbinary(150) NOT NULL,
 	Promptpass bit NOT NULL,
 	PassSet DATE NOT NULL,
 
@@ -174,6 +174,27 @@ Values
 (14,'198 Muir Parkway',Null ,'Fairfax','Virginia','22036','Yes'),
 (15,'258 Jenna Drive',Null ,'Pensacola','Florida','32520','Yes')
 
+Insert into MemberPass([MemberID],[Password],[Promptpass],[PassSet])
+Values
+(1,HASHBYTES('SHA2_512', 'Password1'),0,'2017-04-07'),
+(2,HASHBYTES('SHA2_512', 'Password2'),0,'2017-11-29'),
+(3,HASHBYTES('SHA2_512', 'Password3'),0,'2017-02-26'),
+(4,HASHBYTES('SHA2_512', 'Password4'),0,'2017-11-05'),
+(5,HASHBYTES('SHA2_512', 'Password5'),0,'2016-01-15'),
+(6,HASHBYTES('SHA2_512', 'Password6'),0,'2017-03-13'),
+(7,HASHBYTES('SHA2_512', 'Password7'),0,'2017-08-09'),
+(8,HASHBYTES('SHA2_512', 'Password8'),0,'2017-09-09'),
+(9,HASHBYTES('SHA2_512', 'Password9'),0,'2016-11-21'),
+(10,HASHBYTES('SHA2_512', 'Password10'),0,'2017-12-02'),
+(11,HASHBYTES('SHA2_512', 'Password11'),0,'2017-03-19'),
+(12,HASHBYTES('SHA2_512', 'Password12'),0,'2016-04-21'),
+(13,HASHBYTES('SHA2_512', 'Password13'),0,'2016-03-21'),
+(14,HASHBYTES('SHA2_512', 'Password14'),0,'2017-11-21'),
+(15,HASHBYTES('SHA2_512', 'Password15'),0,'2017-10-06')
+
+
+
+
 Insert into MemberNotes ([MemberID],[Notes])
 Values
 (1,'nascetur ridiculus mus etiam vel augue vestibulum rutrum rutrum neque aenean auctor gravida sem praesent id'),
@@ -221,13 +242,13 @@ Values
 (6,'Free',99.00,'03/13/2017','Free'),
 (7,'Monthly',9.99,'08/09/2017','Yes'),
 (8,'Yearly',99.00,'09/09/2017','Yes'),
-(9,'Yearly',99.00,'11/21/2016','No'),
+(9,'Yearly',99.00,'11/21/2016','Free'),
 (10,'Monthly',9.99,'12/2/2017','Yes'),
 (11,'Monthly',9.99,'03/19/2017','Yes'),
 (12,'Free',27.99,'04/21/2016','Free'),
 (13,'Free',99.99,'03/21/2016','Free'),
 (14,'Monthly',9.99,'11/21/2017','Yes'),
-(15,'Monthly',9.99,'10/06/2017','No')
+(15,'Monthly',9.99,'10/06/2017','Free')
 
 Insert into MemberTransaction ([MemberID],[TransDate],[Charge],[Result],SubExpires)
 Values
@@ -428,6 +449,12 @@ Values
 (15,3,1),
 (15,4,1),
 (15,5,0);
+
+
+
+
+
+
 ----------------------------------------------------------------
 --Shows fullname and mailing address for all members who are currently subscribed
 
@@ -483,6 +510,8 @@ Begin
 		From	MemberTransaction
 		Where TransDate between @StartDate and @EndDate
 END
+
+--exec sp_RenewalIncome '2016-2-16','2018-2-16'
 -----------------------------------------------------------------------
 --Show the amount of new members recieved between specified dates
 
@@ -512,6 +541,7 @@ Begin
 		on			e.EventID = m.EventID
 		Where e.EventDate between @StartDate and @EndDate
 END
+--Exec sp_EventAttend '01/12/2017','03/05/2017'
 ---------------------------------------------------------------------------
 --The view shows the members that are on the day of being expired or already expired, The the SP allows you to insert into the Transaction table.
 
@@ -545,3 +575,5 @@ END;
 
 --EXEC sp_UpdateMembership 4,'2018-02-05', 27.00,'Approved','2018-05-05'
 --Exec sp_UpdateMembership 2, '2018-01-29',9.99,'Approved','2018-03-01'
+
+
