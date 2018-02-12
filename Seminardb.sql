@@ -516,8 +516,9 @@ AS
 Begin 
 		Select Sum(Charge) as Total
 		From	MemberTransaction
-		Where TransDate between @StartDate and @EndDate
-END
+		Where TransDate between @StartDate and @EndDate 
+		and Result = 'Approved'
+END;
 
 --exec sp_RenewalIncome '2016-2-16','2018-2-16'
 -----------------------------------------------------------------------
@@ -623,14 +624,14 @@ BEGIN
 	PassSet = GETDATE() 
 	Where MemberID = @MemberID
 END;
-	   
+	   --Exec sp_ResetPass 1
+		--Exec sp_TempPass 1
 
 
 		  
-	     Exec sp_ResetPass 1
-		
-		 Exec sp_TempPass 1
+	    
+		 
 
-		 Select * from MemberPass
+
 		 
 		
