@@ -28,7 +28,7 @@ CREATE TABLE MemberPass
 (
 	MemberPassID INT Identity,
 	MemberID int NOT NULL,
-	Password varbinary(150) NOT NULL,
+	Password varchar(50) NOT NULL,
 	Promptpass bit NOT NULL,
 	PassSet DATE NOT NULL,
 
@@ -176,21 +176,21 @@ Values
 
 Insert into MemberPass([MemberID],[Password],[Promptpass],[PassSet])
 Values
-(1,HASHBYTES('SHA2_512', 'Password1'),0,'2017-04-07'),
-(2,HASHBYTES('SHA2_512', 'Password2'),0,'2017-11-29'),
-(3,HASHBYTES('SHA2_512', 'Password3'),0,'2017-02-26'),
-(4,HASHBYTES('SHA2_512', 'Password4'),0,'2017-11-05'),
-(5,HASHBYTES('SHA2_512', 'Password5'),0,'2016-01-15'),
-(6,HASHBYTES('SHA2_512', 'Password6'),0,'2017-03-13'),
-(7,HASHBYTES('SHA2_512', 'Password7'),0,'2017-08-09'),
-(8,HASHBYTES('SHA2_512', 'Password8'),0,'2017-09-09'),
-(9,HASHBYTES('SHA2_512', 'Password9'),0,'2016-11-21'),
-(10,HASHBYTES('SHA2_512', 'Password10'),0,'2017-12-02'),
-(11,HASHBYTES('SHA2_512', 'Password11'),0,'2017-03-19'),
-(12,HASHBYTES('SHA2_512', 'Password12'),0,'2016-04-21'),
-(13,HASHBYTES('SHA2_512', 'Password13'),0,'2016-03-21'),
-(14,HASHBYTES('SHA2_512', 'Password14'),0,'2017-11-21'),
-(15,HASHBYTES('SHA2_512', 'Password15'),0,'2017-10-06')
+(1,HASHBYTES('MD5', 'Password1'),1,'2017-04-07'),
+(2,HASHBYTES('MD5', 'Password2'),0,'2017-11-29'),
+(3,HASHBYTES('MD5', 'Password3'),0,'2017-02-26'),
+(4,HASHBYTES('MD5', 'Password4'),0,'2017-11-05'),
+(5,HASHBYTES('MD5', 'Password5'),0,'2016-01-15'),
+(6,HASHBYTES('MD5', 'Password6'),0,'2017-03-13'),
+(7,HASHBYTES('MD5', 'Password7'),0,'2017-08-09'),
+(8,HASHBYTES('MD5', 'Password8'),0,'2017-09-09'),
+(9,HASHBYTES('MD5', 'Password9'),0,'2016-11-21'),
+(10,HASHBYTES('MD5', 'Password10'),0,'2017-12-02'),
+(11,HASHBYTES('MD5', 'Password11'),0,'2017-03-19'),
+(12,HASHBYTES('MD5', 'Password12'),0,'2016-04-21'),
+(13,HASHBYTES('MD5', 'Password13'),0,'2016-03-21'),
+(14,HASHBYTES('MD5', 'Password14'),0,'2017-11-21'),
+(15,HASHBYTES('MD5', 'Password15'),0,'2017-10-06')
 
 
 
@@ -545,7 +545,7 @@ Create Procedure sp_EventAttend
 				@EndDate date
 AS
 Begin 
-		Select		COUNT(MemberAttend)
+		Select		COUNT(MemberAttend)[Events Attended]
 		From		MemberEvents m
 		inner join	Events e
 		on			e.EventID = m.EventID
@@ -586,4 +586,51 @@ END;
 --EXEC sp_UpdateMembership 4,'2018-02-05', 27.00,'Approved','2018-05-05'
 --Exec sp_UpdateMembership 2, '2018-01-29',9.99,'Approved','2018-03-01'
 
+-------------------------------------------------------------------------------------
+-- A stored procedure to pull information for when the last time a member changed there password.
+GO
+Create Procedure sp_ChangedPasswords
+				@memberID int
+as
+Begin 
+	Select MemberID,PassSet
+	From MemberPass
+	Where MemberID = @memberID
+End 
 
+--Exec sp_ChangedPasswords 14
+--Exec sp_ChangedPasswords 8
+-------------------------------------------------------------------------------------
+--Procedure and view to change the password and the date it was changed for a specific MemberID.
+GO
+Create Procedure  sp_ResetPass
+				  @Promptpass bit
+as
+Begin
+	Select *
+	from MemberPass
+	Where Promptpass = @Promptpass
+END;
+
+GO
+Create Procedure sp_TempPass
+				@MemberID int
+				
+AS 
+BEGIN 
+	Update MemberPass 
+	Set Password = HASHBYTES('MD5', 'TempPassword'),
+	PassSet = GETDATE() 
+	Where MemberID = @MemberID
+END;
+	   
+
+
+		  
+	     Exec sp_ResetPass 1
+		
+		 Exec sp_TempPass 1
+
+		 Select * from MemberPass
+		 
+		
