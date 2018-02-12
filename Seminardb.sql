@@ -468,6 +468,8 @@ on			mm.MemberID = m.MemberID
 inner join	Subscription s
 on			s.MemberID = m.MemberID
 Where s.CurrentSub = 'Yes' or s.CurrentSub = 'Free';
+
+--Select * from MemberList
 -----------------------------------------------------------------
 --Shows members fullname and their email.
 
@@ -476,6 +478,8 @@ Create View MemberEmail
 as
 Select		CONCAT(Firstname,' ', Lastname)[Full Name],Email
 From		Member;
+
+--select * from MemberEmail
 ------------------------------------------------------------------
 --Shows the fullname and birthdate of members on a specific month.
 Go
@@ -487,6 +491,10 @@ Begin
 		From	Member
 		Where	Month(Birthdate) = @month
 End
+
+--EXEC sp_BirthdayList 6
+--EXEC sp_BirthdayList 7
+--EXEC sp_BirthdayList 5
 -------------------------------------------------------------------
 --Deletes the payment method if the creditcard is expired. 
 Go
@@ -527,6 +535,8 @@ Begin
 		on			s.MemberID = m.MemberID
 		Where Joined between @StartDate and @EndDate
 END
+
+--Exec sp_NewMembers '11/21/16','01/01/2017'
 -------------------------------------------------------------------------
 --Shows the attendence between a selected startdate and enddate.
 GO
