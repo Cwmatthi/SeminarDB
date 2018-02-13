@@ -625,7 +625,7 @@ BEGIN
 	Where MemberID = @MemberID
 END;
 	   --Exec sp_ResetPass 1
-		--Exec sp_TempPass 1
+	   --Exec sp_TempPass 1
 
 
 		  
