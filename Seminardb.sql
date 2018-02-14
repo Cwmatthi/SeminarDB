@@ -114,28 +114,78 @@ CREATE TABLE PaymentMethods
 	Constraint Fk_Paymethods_MemberID Foreign Key (MemberID) References Member(MemberID),
 	Constraint Fk_Paymethods_TransID Foreign Key (TransID) References MemberTransaction(TransID)
 )
+CREATE TABLE OrganizerInfo
+(
+		OrgID INT identity(1,1),
+		CompanyName varchar(50) Null,
+		FirstName varchar(25) NOT NULL,
+		LastName varchar(25) NOT NULL,
+		Phone varchar(12) NOT NULL,
+		Email varchar(50) NOT NULL
+
+	Primary Key (OrgID)
+)
+CREATE TABLE AdminInfo
+(
+		AdminID INT Identity(1,1),
+		CompanyName varchar(50) Null,
+		FirstName varchar(25) NOT NULL,
+		LastName varchar(25) NOT NULL,
+		Phone varchar(12) NOT NULL,
+		Email varchar(50) NOT NULL
+
+		Primary Key (AdminID)
+)
+
 
 CREATE TABLE [Events]
 (
 	EventID INT Identity(1,1),
+	OrgID INT NOT NULL,
+	AdminID INT NOT NULL,
 	EventTitle varchar(60),
 	Presentor varchar(40),
 	EventDate date,
 	EventTime nvarchar(10)
 
 	Primary Key (EventID)
+	Constraint Fk_Events_OrgID Foreign key (OrgID) References OrganizerInfo(OrgID),
+	Constraint Fk_Events_AdminID foreign key (AdminID) references AdminInfo(AdminId)
 )
+
+
+CREATE TABLE EventSeries
+(
+	SeriesID INT Identity (1,1),
+	AdminID INT NOT NULL,
+	OrgID INT NOT NULL,
+	Title varchar(60) NOT NULL,
+	StartDate date NOT NULL,
+	OptEndDate date NULL,
+	Description varchar(255) NULL,
+	
+
+	Primary Key (SeriesID),
+	Constraint Fk_EventSeries_AdminID foreign Key (AdminID) references AdminInfo(AdminID),
+	Constraint Fk_Eventseries_OrgID	foreign Key (OrgID) references OrganizerInfo(OrgID)
+)
+
+	
 
 CREATE TABLE MemberEvents
 (
 	MemberEventsID INT Identity(1,1),
 	MemberID INT NOT NULL,
 	EventID INT NOT NULL,
-	MemberAttend Bit NOT NULL
+	SeriesID INT NOT NULL,
+	EventAttend Bit NOT NULL,
+	SeriesAttend bit NOT NULL
 
 	Primary Key (MemberEventsID),
 	Constraint Fk_MemberEvents_MemberID Foreign Key (MemberID) References Member(MemberID),
-	Constraint Fk_Memberevents_EventID Foreign Key (EventID) References Events(EventID)
+	Constraint Fk_Memberevents_EventID Foreign Key (EventID) References Events(EventID),
+	Constraint Fk_MemberEvents_SeriesID Foreign Key (SeriesID) References Eventseries(SeriesID),
+
 )
 
 Insert into Member ([Firstname],[MiddleName],[LastName],[Gender],[Birthdate],[Email],[Phone])
@@ -363,92 +413,124 @@ Values
 (14,22,'Diners Club Carte Blanche',30414677064054,'05/01/2018'),
 (15,63,'JCB',3542828093985763,'03/01/2020')
 
+insert into AdminInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Langosh-Schmitt', 'Milly', 'Wolfarth', '127-748-0645', 'mwolfarth0@technorati.com');
+insert into AdminInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Bartell, Considine and Bogan', 'Ernest', 'Bonnell', '359-107-2647', 'ebonnell1@ezinearticles.com');
+insert into AdminInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Runte Group', 'Jennine', 'Alastair', '941-933-4636', 'jalastair2@google.co.jp');
+insert into AdminInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Hessel and Sons', 'Lina', 'Dudek', '716-106-3580', 'ldudek3@zdnet.com');
+insert into AdminInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Jenkins, Jakubowski and O''Kon', 'Ham', 'Jack', '778-365-2558', 'hjack4@scientificamerican.com');
 
-Insert into Events ([EventTitle],[Presentor],[EventDate],[EventTime])
-Values
-('The History of Human Emotions','Tiffany Watt Smith','01/12/2017','8:00PM'),
-('How Great Leaders Inspire Action','Simon Sinek','02/22/2017','6:00PM'),
-('The Puzzle of Motivation','Dan Pink','03/05/2017','12:00PM'),
-('Your Elusive Creative Genius','Elizabeth Gilbert','04/16/2017','5:00PM'),
-('Why are Programmers So Smart?', 'Andrew Comeau','05/01/2017','7:00PM')
+insert into OrganizerInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Greenholt-Ruecker', 'Desmond', 'Zanelli', '129-174-7554', 'dzanelli0@dyndns.org');
+insert into OrganizerInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('McGlynn-Douglas', 'Mandie', 'Mewe', '951-483-6255', 'mmewe1@booking.com');
+insert into OrganizerInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Torphy and Sons', 'Kriste', 'Northern', '502-261-5527', 'knorthern2@fema.gov');
+insert into OrganizerInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Powlowski Inc', 'Clemmie', 'Scurman', '710-870-7847', 'cscurman3@answers.com');
+insert into OrganizerInfo (CompanyName, FirstName, LastName, Phone, Email) 
+values ('Towne Inc', 'Jazmin', 'Swaite', '759-560-4612', 'jswaite4@macromedia.com');
 
-Insert into MemberEvents ([MemberID],[EventID],[MemberAttend])
+Insert into Events ([EventTitle],[OrgID],[AdminID],[Presentor],[EventDate],[EventTime])
 Values
-(1,1,0),
-(1,2,0),
-(1,3,1),
-(1,4,1),
-(1,5,1),
-(2,1,1),
-(2,2,0),
-(2,3,1),
-(2,4,1),
-(2,5,0),
-(3,1,1),
-(3,2,1),
-(3,3,1),
-(3,4,0),
-(3,5,1),
-(4,1,1),
-(4,2,1),
-(4,3,1),
-(4,4,1),
-(4,5,1),
-(5,1,1),
-(5,2,1),
-(5,3,1),
-(5,4,1),
-(5,5,0),
-(6,1,1),
-(6,2,0),
-(6,3,1),
-(6,4,1),
-(6,5,0),
-(7,1,0),
-(7,2,1),
-(7,3,1),
-(7,4,1),
-(7,5,0),
-(8,1,1),
-(8,2,1),
-(8,3,1),
-(8,4,1),
-(8,5,0),
-(9,1,0),
-(9,2,1),
-(9,3,1),
-(9,4,1),
-(9,5,0),
-(10,1,1),
-(10,2,1),
-(10,3,0),
-(10,4,0),
-(10,5,0),
-(11,1,1),
-(11,2,1),
-(11,3,0),
-(11,4,0),
-(11,5,0),
-(12,1,1),
-(12,2,0),
-(12,3,1),
-(12,4,1),
-(12,5,1),
-(13,1,1),
-(13,2,1),
-(13,3,0),
-(13,4,0),
-(13,5,1),
-(14,1,0),
-(14,2,1),
-(14,3,1),
-(14,4,1),
-(14,5,0),
-(15,1,1),
-(15,2,1),
-(15,3,1),
-(15,4,1),
-(15,5,0);
+('The History of Human Emotions',1,5,'Tiffany Watt Smith','01/12/2017','8:00PM'),
+('How Great Leaders Inspire Action',2,4,'Simon Sinek','02/22/2017','6:00PM'),
+('The Puzzle of Motivation',3,3,'Dan Pink','03/05/2017','12:00PM'),
+('Your Elusive Creative Genius',4,2,'Elizabeth Gilbert','04/16/2017','5:00PM'),
+('Why are Programmers So Smart?',5,1, 'Andrew Comeau','05/01/2017','7:00PM')
+
+insert into EventSeries (AdminID, OrgID, Title, Startdate, OptEndDate, Description) 
+values (2, 4, 'Locusts, The', '07/25/2017', '7/22/2017', 'About locusts that swarm stuff.');
+insert into EventSeries (AdminID, OrgID, Title, Startdate, OptEndDate, Description) 
+values (5, 3, 'Vampire Lovers, The', '03/10/2017', '10/29/2017', 'Twilight v12.');
+insert into EventSeries (AdminID, OrgID, Title, Startdate, OptEndDate, Description) 
+values (1, 2, 'Hum Tum', '01/03/2018', '12/15/2017', 'Humpty dumpty needs to eat... EGGS.');
+insert into EventSeries (AdminID, OrgID, Title, Startdate, OptEndDate, Description) 
+values (4, 5, 'Fatty Drives the Bus', '02/26/2017', '11/23/2017', 'Large guy drives a bus.');
+insert into EventSeries (AdminID, OrgID, Title, Startdate, OptEndDate, Description) 
+values (3, 1, 'DarkWolf', '02/10/2018', '6/25/2017', 'Team Jacob.');
+
+Insert into MemberEvents ([MemberID],[EventID],SeriesID,[EventAttend], SeriesAttend)
+Values
+(1,1,1,0,1),
+(1,2,2,0,0),
+(1,3,3,1,1),
+(1,4,4,1,1),
+(1,5,5,1,1),
+(2,1,1,1,0),
+(2,2,2,0,0),
+(2,3,3,1,1),
+(2,4,4,1,1),
+(2,5,5,0,0),
+(3,1,1,1,1),
+(3,2,2,1,0),
+(3,3,3,1,1),
+(3,4,4,0,1),
+(3,5,5,1,0),
+(4,1,1,1,0),
+(4,2,2,1,1),
+(4,3,3,1,0),
+(4,4,4,1,1),
+(4,5,5,1,1),
+(5,1,1,1,1),
+(5,2,2,1,0),
+(5,3,3,1,1),
+(5,4,4,1,0),
+(5,5,5,0,1),
+(6,1,1,1,0),
+(6,2,2,0,1),
+(6,3,3,1,0),
+(6,4,4,1,1),
+(6,5,5,0,1),
+(7,1,1,0,0),
+(7,2,2,1,1),
+(7,3,3,1,0),
+(7,4,4,1,0),
+(7,5,5,0,1),
+(8,1,1,1,0),
+(8,2,2,1,1),
+(8,3,3,1,0),
+(8,4,4,1,1),
+(8,5,5,0,0),
+(9,1,1,0,1),
+(9,2,2,1,1),
+(9,3,3,1,1),
+(9,4,4,1,0),
+(9,5,5,0,1),
+(10,1,1,1,0),
+(10,2,2,1,1),
+(10,3,3,0,0),
+(10,4,4,0,1),
+(10,5,5,0,0),
+(11,1,1,1,1),
+(11,2,2,1,0),
+(11,3,3,0,1),
+(11,4,4,0,0),
+(11,5,5,0,1),
+(12,1,1,1,1),
+(12,2,2,0,1),
+(12,3,3,1,0),
+(12,4,4,1,0),
+(12,5,5,1,1),
+(13,1,1,1,0),
+(13,2,2,1,0),
+(13,3,3,0,0),
+(13,4,4,0,1),
+(13,5,5,1,1),
+(14,1,1,0,0),
+(14,2,2,1,0),
+(14,3,3,1,1),
+(14,4,4,1,0),
+(14,5,5,0,1),
+(15,1,1,1,0),
+(15,2,2,1,1),
+(15,3,3,1,0),
+(15,4,4,1,1),
+(15,5,5,0,1)
 
 
 
@@ -546,7 +628,7 @@ Create Procedure sp_EventAttend
 				@EndDate date
 AS
 Begin 
-		Select		COUNT(MemberAttend)[Events Attended]
+		Select		COUNT(EventAttend)[Events Attended]
 		From		MemberEvents m
 		inner join	Events e
 		on			e.EventID = m.EventID
@@ -626,9 +708,34 @@ BEGIN
 END;
 	   --Exec sp_ResetPass 1
 	   --Exec sp_TempPass 1
+-----------------------------------------------------------------------------------------
+GO
+Create View vw_EventDetails
+With Schemabinding 
+as 
+Select		Top 100 EventTitle,Presentor,EventDate,EventTime,Count(EventAttend)[Members Attended]
+From		dbo.Events	e
+inner join	dbo.MemberEvents me 
+on			me.EventID = e.EventID
+Group by	EventTitle,Presentor,EventDate,EventTime,e.EventID,EventAttend
+Having		Me.EventAttend > 0 
+Order by    eventdate desc;
 
+------------------------------------------------------------------------------------------
 
-		  
+GO 
+Create View vw_EmployeeMember 
+As 
+Select		CONCAT(m.Firstname,' ', m.MiddleName,' ', m.LastName)[Name],mm.AddressLine1,mm.BillAddress,mm.City,mm.State,mm.PostalCode			
+From		Member m
+inner join	Subscription s
+on			s.MemberID = m.MemberID
+inner join	MemberMail mm 
+on			mm.MemberID	= m.MemberID
+Where		CurrentSub = 'Yes'
+With CHECK OPTION 		  
+
+-----------------------------------------------------------------------------------------------------------------------------
 	    
 		 
 
